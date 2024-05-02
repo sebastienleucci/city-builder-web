@@ -2,7 +2,7 @@ import { OrbitControls, SoftShadows } from "@react-three/drei"
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 
-function World() {
+export default function Experience() {
 	const box = useRef()
 
 	useFrame((state, delta) => {
@@ -32,4 +32,3 @@ function World() {
 	)
 }
 
-export default World
