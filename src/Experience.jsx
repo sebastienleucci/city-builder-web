@@ -4,7 +4,8 @@ import { CreateFloor } from "./components/CreateFloor"
 import { GlobalUi } from "./GlobalUi.jsx"
 import { Canvas } from "@react-three/fiber"
 export default function Experience() {
-    return (
+	// document.body.style.cursor = "pointer"
+	return (
 		<main id='canvas-container' className='h-[100dvh] bg-emerald-200'>
 			<GlobalUi />
 

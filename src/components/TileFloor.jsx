@@ -3,7 +3,7 @@ import { useGameMode } from "../store/GameModeStore"
 import { CreateBuilding } from "./CreateBuilding"
 import { CreateBuildingHover } from "./CreateBuildingHover"
 
-export const TileFloor = ({ coord, size }) => {
+export const TileFloor = ({ index, coord, size }) => {
 	//Get Mode and Type Global Values
 	const gameMode = useGameMode.getState().gameMode
 	const buildingType = useGameMode.getState().elementType
@@ -14,26 +14,32 @@ export const TileFloor = ({ coord, size }) => {
 	const [spawnType, setSpawnType] = useState("")
 
 	//Hover Pointer section
-	const onPointerOver = () => {
-		document.body.style.cursor = "pointer"
+	const onPointerEnter = (e) => {
+		e.stopPropagation()
 		if (!spawnAsset) {
 			setColor("red")
 			setHovered(true)
 		}
 	}
-	const onPointerOut = () => {
-		if (!spawnAsset) setHovered(false)
-		if (!spawnAsset) setColor("greenyellow")
-		document.body.style.cursor = "auto"
+	const onPointerOut = (e) => {
+		e.stopPropagation()
+		if (!spawnAsset) {
+			setHovered(false)
+			setColor("greenyellow")
+		}
 	}
 
-	//Handle Spawn
+    //Handle Spawn
 	const handleSpawnAsset = () => {
 		if (gameMode === "build" && spawnAsset === false) {
 			setSpawnAsset(true)
 			setSpawnType(buildingType)
 			setColor("greenyellow")
 		}
+	}
+	//Handle Destroy
+	const handleDestroyAsset = () => {
+		setSpawnAsset(false)
 	}
 
 	return (
@@ -43,7 +49,7 @@ export const TileFloor = ({ coord, size }) => {
 				scale={1}
 				rotation-x={-Math.PI * 0.5}
 				position={[coord.x - size / 2, 0, coord.y - size / 2]}
-				onPointerOver={onPointerOver}
+				onPointerEnter={onPointerEnter}
 				onPointerOut={onPointerOut}
 				onClick={handleSpawnAsset}
 			>
@@ -53,7 +59,7 @@ export const TileFloor = ({ coord, size }) => {
 			{!spawnAsset && hovered && gameMode === "build" && (
 				<CreateBuildingHover type={buildingType} {...{ coord, size }} />
 			)}
-			{spawnAsset && <CreateBuilding type={spawnType} {...{ coord, size }} />}
+			{spawnAsset && <CreateBuilding type={spawnType} {...{ coord, size, handleDestroyAsset }} />}
 		</>
 	)
 }

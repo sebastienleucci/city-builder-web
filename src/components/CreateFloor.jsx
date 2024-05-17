@@ -13,7 +13,7 @@ export const CreateFloor = ({ size }) => {
 	return (
 		<React.Fragment>
 			{flatGrid.map((coord, index) => (
-				<TileFloor key={index} {...{ coord, size }} />
+				<TileFloor key={index} {...{ index, coord, size }} />
 			))}
 		</React.Fragment>
 	)
