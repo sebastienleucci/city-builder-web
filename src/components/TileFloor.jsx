@@ -1,12 +1,22 @@
-import React, { useState } from "react"
+import React, { useState, forwardRef } from "react"
 import { useGameMode } from "../store/GameModeStore"
 import { CreateBuilding } from "./CreateBuilding"
 import { CreateBuildingHover } from "./CreateBuildingHover"
+import { useHoverFloor } from "../hooks/useHoverFloor"
+import { DestroyBuildingHover } from "./ListBuildingHover"
 
-export const TileFloor = ({ index, coord, size }) => {
-	//Get Mode and Type Global Values
-	const gameMode = useGameMode.getState().gameMode
-	const buildingType = useGameMode.getState().elementType
+export const TileFloor = forwardRef(({ index, coord, size }, ref) => {
+	/*
+	// Work but only on desktop find a solution to trigger one time before a click and it's fine unless it won't work on mobile
+	// const [gameMode, setGameMode] = useState(useGameMode((state) => state.gameMode))
+	// const gameMode = useGameMode((state) => state.gameMode)
+	// const buildingType = useGameMode.getState().elementType
+    */
+
+	//From Zustand re-render everytime gameMode/bulidingType Change
+	const gameMode = useGameMode((state) => state.gameMode)
+	const buildingType = useGameMode((state) => state.elementType)
+
 	//Set States
 	const [color, setColor] = useState("greenyellow")
 	const [hovered, setHovered] = useState(false)
@@ -14,32 +24,18 @@ export const TileFloor = ({ index, coord, size }) => {
 	const [spawnType, setSpawnType] = useState("")
 
 	//Hover Pointer section
-	const onPointerEnter = (e) => {
-		e.stopPropagation()
-		if (!spawnAsset) {
-			setColor("red")
-			setHovered(true)
-		}
-	}
-	const onPointerOut = (e) => {
-		e.stopPropagation()
-		if (!spawnAsset) {
-			setHovered(false)
-			setColor("greenyellow")
-		}
-	}
+	const { handlePointerEnter, handlePointerOut } = useHoverFloor({ setHovered, setColor, spawnAsset })
 
-    //Handle Spawn
-	const handleSpawnAsset = () => {
+	//Handle Spawn
+	const handleClick = () => {
 		if (gameMode === "build" && spawnAsset === false) {
 			setSpawnAsset(true)
 			setSpawnType(buildingType)
 			setColor("greenyellow")
 		}
-	}
-	//Handle Destroy
-	const handleDestroyAsset = () => {
-		setSpawnAsset(false)
+		if (gameMode === "destroy" && spawnAsset === true) {
+			setSpawnAsset(false)
+		}
 	}
 
 	return (
@@ -49,9 +45,10 @@ export const TileFloor = ({ index, coord, size }) => {
 				scale={1}
 				rotation-x={-Math.PI * 0.5}
 				position={[coord.x - size / 2, 0, coord.y - size / 2]}
-				onPointerEnter={onPointerEnter}
-				onPointerOut={onPointerOut}
-				onClick={handleSpawnAsset}
+				onPointerEnter={handlePointerEnter}
+				onPointerOut={handlePointerOut}
+				onClick={handleClick}
+				ref={ref}
 			>
 				<planeGeometry />
 				<meshStandardMaterial color={color} />
@@ -59,10 +56,10 @@ export const TileFloor = ({ index, coord, size }) => {
 			{!spawnAsset && hovered && gameMode === "build" && (
 				<CreateBuildingHover type={buildingType} {...{ coord, size }} />
 			)}
-			{spawnAsset && <CreateBuilding type={spawnType} {...{ coord, size, handleDestroyAsset }} />}
+			{spawnAsset && hovered && gameMode === "destroy" && (
+				<DestroyBuildingHover type={buildingType} {...{ coord, size }} />
+			)}
+			{spawnAsset && <CreateBuilding type={spawnType} {...{ coord, size }} />}
 		</>
 	)
-}
-
-// const gameMode = useGameMode((state) => state.gameMode)
-// const buildingType = useGameMode((state) => state.buildingType)
+})

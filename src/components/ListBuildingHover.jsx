@@ -30,3 +30,12 @@ export const PreRoad = ({ coord, size }) => {
 		</mesh>
 	)
 }
+
+export const DestroyBuildingHover = ({ coord, size }) => {
+	return (
+		<mesh scale={[1, 1.5, 1]} position={[coord.x - size / 2, 0.6, coord.y - size / 2]}>
+			<boxGeometry rotation={[0, 0, 0]} />
+			<meshStandardMaterial opacity={0.5} color={"red"} transparent={true} />
+		</mesh>
+	)
+}

@@ -2,6 +2,7 @@ import { ButtonCreateElement } from "./components/ButtonCreateElement"
 import { useGameMode } from "./store/GameModeStore"
 
 export const GlobalUi = () => {
+
 	return (
 		<div className='absolute top-0 left-0 w-full z-10 pointer-events-none'>
 			<Header />
